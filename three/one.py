@@ -2,24 +2,34 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-
-# %%
-input = np.array([[7, 6, 4, 2, 1],
-[1, 2, 7, 8, 9],
-[9, 7, 6, 2, 1],
-[1, 3, 2, 4, 5],
-[8, 6, 4, 4, 1],
-[1, 3, 6, 7, 9]])
+import re
 
 # %%
 with open('input.txt') as f:
-    lines = f.readlines()
+    input = f.read()
 
-array_of_lines = [np.array(list(map(int, line.split()))) for line in lines]
-input = np.array(array_of_lines, dtype=object)
-
-# %%
-input[0]
+input
 
 # %%
+pattern = r'mul\(\d{1,3},\d{1,3}\)'
 
+matches = re.findall(pattern, input)
+print(matches)
+
+#%%
+def multiply(task):
+    nums = task[4:-1].split(',')
+    res = int(nums[0])*int(nums[1])
+    return res
+
+
+#%%
+sum = 0
+for task in matches:
+    prod = multiply(task)
+    sum += prod
+    print(task, multiply(task))
+
+print(sum)
+
+# %%
