@@ -23,6 +23,28 @@ for idy in range(len_y):
 print(matrix)
 print(matrix.shape)
 
+#%%
+xmas_count = 0
+
+for idy in range(len_y-2):
+    for idx in range(len_x-2):
+        slice = matrix[idy:idy+3, idx:idx+3]
+        print("---")
+        print(slice)
+        
+
+        if (slice[1,1]=='A'):
+            if ((slice[0,0]=='M') and (slice[2,2]=='S')) or ((slice[0,0]=='S') and (slice[2,2]=='M')):
+                if ((slice[0,2]=='M') and (slice[2,0]=='S')) or ((slice[0,2]=='S') and (slice[2,0]=='M')):
+                    xmas_count += 1
+                    print('+1')
+
+                
+            
+
+
+
+
 #%% along rows
 xmas_count = 0
 
