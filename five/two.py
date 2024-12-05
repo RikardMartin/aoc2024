@@ -3,7 +3,7 @@ import numpy as np
 
 #%%
 
-with open('input.txt') as f:
+with open('testinput.txt') as f:
     data = f.read()
 
 data = str(data.split('\n')).split("\'\'")
@@ -35,12 +35,12 @@ for entry in rules:
 rulebook
 
 #%% updates
-# updates = eval('[['+data[1][2:].replace(', ', '], [').replace('\'', '')+']')
-updates = eval('[['+data[1][2:].replace(', ', '], [')[:-3].replace('\'', '')+']')
+updates = eval('[['+data[1][2:].replace(', ', '], [').replace('\'', '')+']')
+# updates = eval('[['+data[1][2:].replace(', ', '], [')[:-3].replace('\'', '')+']')
 updates
 
 #%%
-correct = []
+wrong = []
 
 for update in updates:
     violation=False
@@ -57,10 +57,13 @@ for update in updates:
             if violation: break
         if violation: break
     
-    if not violation:
-        correct.append(update)
+    if violation:
+        wrong.append(update)
 
-correct
+wrong
+
+#%% correct order
+
 
 #%%
 page_sum = 0
