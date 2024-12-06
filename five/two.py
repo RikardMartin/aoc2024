@@ -3,25 +3,11 @@ import numpy as np
 
 #%%
 
-with open('testinput.txt') as f:
+with open('input.txt') as f:
     data = f.read()
 
 data = str(data.split('\n')).split("\'\'")
 data
-# %%
-"""
-def add_deps(basekey, rule):
-    if not rule.value in all_rules[basekey]: add rule.value to values
-
-    for new_rule in list where new_rule.key equals rule.value:
-        add_deps(basekey, new_rule)
-
-
-Add all rule-keys to dict as keys
-For each rule in rules:
-    add_deps(rule.key, rule)
-
-"""
 
 #%% rules
 rules = data[0]
@@ -35,8 +21,8 @@ for entry in rules:
 rulebook
 
 #%% updates
-updates = eval('[['+data[1][2:].replace(', ', '], [').replace('\'', '')+']')
-# updates = eval('[['+data[1][2:].replace(', ', '], [')[:-3].replace('\'', '')+']')
+#updates = eval('[['+data[1][2:].replace(', ', '], [').replace('\'', '')+']')
+updates = eval('[['+data[1][2:].replace(', ', '], [')[:-3].replace('\'', '')+']')
 updates
 
 #%%
@@ -63,11 +49,47 @@ for update in updates:
 wrong
 
 #%% correct order
+"""
+for update in wrong:
+    end = len(update)-1
+    for element in update[:end]:
+        while element is wrong wrt to next element, until end-i'th element:
+            flip pair
+        end -= 1
+    """
+
+def is_wrong(left, right):
+    for rule in rulebook:
+        if (left==rule[1]) and (right==rule[0]):
+            return True
+
+
+for update in wrong:
+    print("---")
+    print(update)
+
+    length = len(update)-1
+    end = length
+    for j in range(length):
+        i = 0
+        while i<end:
+
+            left, right = update[i], update[i+1]
+            if is_wrong(left, right):
+                tmp = left
+                update[i] = right
+                update[i+1] = tmp
+            
+            i += 1
+        
+        end -= 1
+
+    print(update)
 
 
 #%%
 page_sum = 0
-for list in correct:
+for list in wrong:
     center = int(len(list)/2)
     page_sum += list[center]
 
