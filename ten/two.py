@@ -49,10 +49,7 @@ def find_paths((x,y))
 def find_paths(pos):
     total_paths = 0
     if matrix[pos]==9:
-        if visited[pos]==0:
-            # print("reached goal at", pos)
-            visited[pos] = 1
-            return 1
+        return 1
     
     else:
         directions = get_possible_directions(pos)
@@ -72,7 +69,7 @@ print(matrix)
 for each trailhead in matrix:
     num_paths += find_path(trailhead_coords)
 """
-sum_of_scores = 0
+sum_of_ratings = 0
 
 y, x = np.where(matrix==0)
 # y = y[[0]]
@@ -86,9 +83,9 @@ for idy, idx in zip(y,x):
     num_paths = find_paths((idy,idx))
     print("found paths:", num_paths)
 
-    sum_of_scores += num_paths
+    sum_of_ratings += num_paths
 
-print("sum of scores:", sum_of_scores)
+print("sum of ratings:", sum_of_ratings)
 
 
 # %%
