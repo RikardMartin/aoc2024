@@ -2,7 +2,7 @@
 import numpy as np
 
 #%% read input
-with open('testinput.txt') as f:
+with open('input.txt') as f:
     input = f.read()
 
 input = input[:-1]
@@ -32,30 +32,31 @@ def process_stone(stone):
 #%%
 
 
-def blink(array, blinks, n_stones):
-    """
-    for each stone in array:
+def blink(array, blinks):
+    if blinks == 75:
+        # n_stones = len(array)
+        # print("nblinks:", blinks)
+        return len(array)
+
+    blinks += 1
+    total_stones = 0
+    for stone in array:
         new_arr = process_stone(stone)
-        process(new_arr)
-    """
-    print("len(array):", len(array))
-    if blinks < 6:
-        blinks += 1
-        for stone in array:
-            new_arr = process_stone(stone)
-            return blink(new_arr, blinks, len(new_arr))
+        n_stone = blink(new_arr, blinks)
+        total_stones += n_stone
+        # print("len(arr):", len(new_arr), " | n_stone:", n_stone, " | total_stones:", total_stones)
 
-    else:
-        
-        return blinks, len(array)
+    return total_stones
 
-#%%% run algorithm
+# run algorithm
 """
 """
 array = input.copy()
-blinks, n_stones = blink(array, 0, len(array))
+# n_stones = 0
+blinks = 0
+stones = blink(array, blinks)
 
-print("Number of blinks:", blinks, ' | n_stones:', n_stones)
+print("Number of stones:", stones)
 
 
 # %%
