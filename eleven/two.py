@@ -21,18 +21,35 @@ def process_stone(stone):
     else:
         if stone == 0:
             stonemap[stone] = [1]
-            return [1]
+            return stonemap[stone]
         
         elif len(str(stone)) % 2 == 0:
             strstone = str(stone)
             left = strstone[:int(len(strstone)/2)]
             right = strstone[int(len(strstone)/2):]
             stonemap[stone] = [int(left), int(right)]
-            return [int(left), int(right)]
+            return stonemap[stone]
 
         else:
-            stonemap[stone] = [stone*2024]
-            return [stone*2024]
+            stonemap[stone] = [int(stone*2024)]
+            return stonemap[stone]
+
+from functools import lru_cache
+import json
+
+@lru_cache(maxsize=None)  # Cache unlimited results
+def memoized_blink(array_json, blinks):
+    array = json.loads(array_json)  # Convert back to Python list
+    if blinks == 75:
+        return len(array)
+
+    blinks += 1
+    total_stones = 0
+    for stone in array:
+        new_arr = process_stone(stone)
+        total_stones += memoized_blink(json.dumps(new_arr), blinks)  # Convert to JSON for hashable input
+
+    return total_stones
 
 
 def blink(array, blinks, return_dict, process_id):
@@ -44,27 +61,10 @@ def blink(array, blinks, return_dict, process_id):
     total_stones = 0
     for stone in array:
         new_arr = process_stone(stone)
-        total_stones += blink_recursive(new_arr, blinks)
+        total_stones += memoized_blink(json.dumps(new_arr), blinks)
     
     return_dict[process_id] = total_stones
 
-# Recursive helper function for processes
-def blink_recursive(array, blinks):
-    if blinks == 25:
-        return len(array)
-
-    # global progress
-    # progress += 1
-    # if progress%1000000 == 0:
-    #     print(progress, end='\n')
-
-    blinks += 1
-    total_stones = 0
-    for stone in array:
-        new_arr = process_stone(stone)
-        total_stones += blink_recursive(new_arr, blinks)
-    
-    return total_stones
 
 # Main function to parallelize
 def parallel_blink(input_array):
@@ -94,22 +94,3 @@ blinks = 0
 stones = parallel_blink(input)
 
 print("\nNumber of stones:", stones)
-
-
-# %%
-
-
-#%%
-def blink(array, blinks):
-
-    if blinks == 75:
-        return len(array)
-
-    blinks += 1
-    total_stones = 0
-    for stone in array:
-        new_arr = process_stone(stone)
-        n_stone = blink(new_arr, blinks)
-        total_stones += n_stone
-
-    return total_stones
