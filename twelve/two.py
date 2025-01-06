@@ -1,6 +1,6 @@
 #%%
 import numpy as np
-from collections import defaultdict
+# from collections import defaultdict
 
 
 #%%
@@ -29,7 +29,7 @@ print(matrix.shape)
 # print(plants)
 #%%
 def find_region(iy, ix, symbol, pruned_garden, direction=None):
-    global area, perimeter, coords
+    global area, coords
     """
     """
     # print("checking node", (iy, ix), "for symbol", symbol, "with area as", area)
@@ -76,20 +76,8 @@ def get_boundary_nodes(coords):
 
     return boundary_nodes
 
-
-def find_perimeter():
+def get_next_outer_boundary_node(node, dir):
     """
-    # This handles inside boundary edges
-    walk through region matrix. row by row from left to right
-        if current node is not symbol, continue.
-        at current point, for each direction that doesnt have symbol in it.
-            if right or left:
-                if up is symbol, mark direction as perimeter
-            if up or down:
-                if left is symbol, mark that direction as perimeter.
-        else continue.
-
-    # This handles outside boundary edges
     start at first region node
     walk left if it is inside region
     else walk forward if it is inside region
@@ -99,13 +87,141 @@ def find_perimeter():
     record direction we walked at
     use direction to take next step acording to left,straight,right,back-rule
     break when we arrive at first node
+    """
+    if dir=='right':
+        if (node[0]-1, node[1]) in coords:
+            node = (node[0]-1, node[1])
+            dir = 'up'
+        elif (node[0], node[1]+1) in coords:
+            node = (node[0], node[1]+1)
+            dir = 'right'
+        elif (node[0]+1, node[1]) in coords:
+            node = (node[0]+1, node[1])
+            dir = 'down'
+        elif (node[0], node[1]-1) in coords:
+            node = (node[0], node[1]-1)
+            dir = 'left'
+        else:
+            dir = None
+    
+    elif dir=='up':
+        if (node[0], node[1]-1) in coords:
+            node = (node[0], node[1]-1)
+            dir = 'left'
+        elif (node[0]-1, node[1]) in coords:
+            node = (node[0]-1, node[1])
+            dir = 'up'
+        elif (node[0], node[1]+1) in coords:
+            node = (node[0], node[1]+1)
+            dir = 'right'
+        elif (node[0]+1, node[1]) in coords:
+            node = (node[0]+1, node[1])
+            dir = 'down'    
+        else:
+            dir = None
+        
+    elif dir=='down':
+        if (node[0], node[1]+1) in coords:
+            node = (node[0], node[1]+1)
+            dir = 'right'
+        elif (node[0]+1, node[1]) in coords:
+            node = (node[0]+1, node[1])
+            dir = 'down'
+        elif (node[0], node[1]-1) in coords:
+            node = (node[0], node[1]-1)
+            dir = 'left'
+        elif (node[0]-1, node[1]) in coords:
+            node = (node[0]-1, node[1])
+            dir = 'up'
+        else:
+            dir = None
+    
+    elif dir=='left':
+        if (node[0]+1, node[1]) in coords:
+            node = (node[0]+1, node[1])
+            dir = 'down'
+        elif (node[0], node[1]-1) in coords:
+            node = (node[0], node[1]-1)
+            dir = 'left'
+        elif (node[0]-1, node[1]) in coords:
+            node = (node[0]-1, node[1])
+            dir = 'up'
+        elif (node[0], node[1]+1) in coords:
+            node = (node[0], node[1]+1)
+            dir = 'right'
+        else:
+            dir = None
+    
+    return node, dir
 
+def find_outer_boundary(list_of_coords):
+    node = list_of_coords[0]
+    dir = 'right'
+    outer_boundary = []
+    
+    while True:
+        outer_boundary.append(node)
+        node, dir = get_next_outer_boundary_node(node, dir)
+        if node==list_of_coords[0]:
+            break
+    
+    return outer_boundary
+
+def find_perimeter(list_of_coords):
+    # This handles inside boundary edges
+    """
+    walk through region matrix. row by row from left to right
+        if current node is not symbol, continue.
+        at current point, for each direction that doesnt have symbol in it.
+            if right or left:
+                if up is symbol, mark direction as perimeter
+            if up or down:
+                if left is symbol, mark that direction as perimeter.
+        else continue.
+    """
+    inner_perimeter = 0
+
+    # This handles outside boundary edges
+    """
+    get all boundary nodes.
     for each boundary node.
         increment perimeter if we change direction, e.g. we now increase or decrease y, but last node decreased x.
     """
-    pass
+    outer_boundary = find_outer_boundary(list_of_coords)
+    outer_perimeter = 0
+    print(outer_boundary)
+    
+    if len(outer_boundary) > 1:
+        first = outer_boundary[0]
+        second = outer_boundary[1]
+        if first[0] != second[0]: direction = 'y'
+        elif first[1] != second[1]: direction = 'x'
+        outer_perimeter += 1
+        outer_boundary.append(outer_boundary[0])
+
+        for ix in range(len(outer_boundary)-1):
+            this = outer_boundary[ix]
+            next = outer_boundary[ix+1]
+            # print('direction', direction)
+            # print(this, '->', next)
+
+            if (direction == 'x') and (next[0] != this[0]):
+                    outer_perimeter += 1
+                    direction = 'y'
+                    # print("going y")
+            elif (direction == 'y') and (next[1] != this[1]):
+                    outer_perimeter += 1
+                    direction = 'x'
+                    # print("going x")
+
+    else:
+        outer_perimeter = 4
 
 
+    return inner_perimeter + outer_perimeter
+
+
+# Main algorithm
 pruned_garden = matrix.copy()
 total_price = 0
 
@@ -117,7 +233,7 @@ for idy in range(1,len_y-1):
         symbol = pruned_garden[idy, idx]
         if symbol!='':
             find_region(idy, idx, symbol, pruned_garden)
-            perimeter = find_perimeter(coords)
+            perimeter = find_perimeter(list(coords))
 
             total_price += area*perimeter
             print("plant:", symbol, ", area:", area, ", perimeter:", perimeter)
