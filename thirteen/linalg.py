@@ -33,31 +33,29 @@ with open('input.txt') as inp:
 
 machines
 #%%
+"""
+(t11,t12)(nA)=(X)
+(t21,t22)(nB)=(Y)
+
+(2x2)*(2x1)=(2x1)
+
+(94,22)(nA)=8400
+(34,67)(nB)=5400
+"""
 
 def is_integer(floatvalue, tol):
     return floatvalue - int(floatvalue) < tol
 
-def solve(machine):
-    for n1 in range(101):
-        for n2 in range(101):
-            N = np.array([n1, n2])
-            if np.array_equal(np.dot(machine['T'], N), machine['P']):
-                return N
-    return None
-
 total_tokens = 0
-tol = 10000000000
+tol = 0.000000000000001
 for machine in machines:
 
+    steps = np.dot(np.linalg.inv(machine['T']), machine['P'])
+    # print(steps, is_integer(steps[0], tol), is_integer(steps[1], tol))
+
     
-    steps = solve(machine)
-    if steps is not None:
-        # print(steps) #, is_integer(steps[0], tol), is_integer(steps[1], tol))
-
-
-        
-        
-        # if (-100 <= steps[0] < 1001) and (-1000 <= steps[1] < 10001) and is_integer(steps[0], tol) and is_integer(steps[1], tol):
+    
+    if (0 <= steps[0] < 101) and (0 <= steps[1] < 101) and is_integer(steps[0], tol) and is_integer(steps[1], tol):
         tokens = 3*steps[0] + steps[1]
         print("Steps:", steps, " | Tokens:", tokens)
         total_tokens += tokens
