@@ -1,10 +1,10 @@
 #%%
 import numpy as np
-from itertools import chain
+from math import isclose
 
 machines = []
 price_offset = 10000000000000
-with open('testinput.txt') as inp:
+with open('input.txt') as inp:
     for line in inp:
 
         A = line.split(':')[1].lstrip().split(', ')
@@ -46,33 +46,29 @@ def is_integer(floatvalue, tol):
     return False
     return floatvalue.is_integer()
 
-def solve_iter(machine):
-    longest_step = (machine['T']).max()
-    limit = int(price_offset/(longest_step*2))
-    for n1 in chain([0], range(price_offset-, limit+101)):
-        for n2 in chain([0], range(limit, limit+101)):
-            N = np.array([n1, n2])
-            if np.array_equal(np.dot(machine['T'], N), machine['P']):
-                return N
-    return None
-
 def solve(machine):
     N = np.dot(np.linalg.inv(machine['T']), machine['P'])
-    return N
+    N = np.round(N).astype(int)
+
+    if (N[0] >= 0) and (N[1] >= 0):
+        if np.array_equal(np.dot(machine['T'], N), machine['P']):
+            return N.astype(int)
+
+    return None
 
 total_tokens = 0
-tol = 0.0001
-disc_range = chain([0], range(price_offset, price_offset+101))
+tol = 0.000001
 for machine in machines:
-    steps = solve_iter(machine)
+    steps = solve(machine)
 
     if steps is not None:
-        print(f"Steps: ({steps[0]:.10f}, {steps[1]:.10f})", is_integer(steps[0], tol), is_integer(steps[1], tol))
+        # print(f"Steps: ({steps[0]:.10f}, {steps[1]:.10f})", is_integer(steps[0], tol), is_integer(steps[1], tol))
 
         # if (0 <= steps[0]) and (0 <= steps[1]) and is_integer(steps[0], tol) and is_integer(steps[1], tol):
-            # tokens = 3*steps[0] + steps[1]
-            # print(f"Steps: ({steps[0]:.10f}, {steps[1]:.10f})", f"Tokens: {tokens}")
-            # total_tokens += tokens
+        # if isclose(round(steps[0]), steps[0], rel_tol=0, abs_tol=1e-4) and isclose(round(steps[1]), steps[1], rel_tol=0, abs_tol=1e-4):
+        tokens = 3*steps[0] + steps[1]
+        print(f"Steps: ({steps[0]:.1f}, {steps[1]:.1f})", f"Tokens: {tokens}")
+        total_tokens += tokens
 
 
     else: print("Steps is None")
@@ -80,4 +76,16 @@ for machine in machines:
 print("Total tokens:", total_tokens)
 
 #%%
+machine = machines[0]
 
+C = np.array([price_offset, price_offset])
+N = np.dot(np.linalg.inv(machine['T']), C)
+
+for n1 in range(N[0]):
+        for n2 in range(101):
+            N = np.array([n1, n2])
+            C = np.array([price_offset, price_offset])
+            prod = np.dot(machine['T'], N) - C
+            if np.array_equal(prod, machine['P']):
+
+# %%
